@@ -8,6 +8,10 @@ async function query(object) {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.NODE_ENV === 'development' ? false : true,
+    //se o ambiente estiver em desenvolvimento, não use o ssl.
+    //se estiver em produção, use o ssl
+    //o ambiente de desenvolvimento não está configurado para usar ssl
   });
 
   console.log('Credenciais do POSTGRES: ', {
@@ -16,6 +20,7 @@ async function query(object) {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl: process.env.NODE_ENV
   });
   
   
@@ -29,7 +34,7 @@ async function query(object) {
   } catch (err){
     console.error(err);
     //caso dê erro, mostre
-    throw error;
+    throw err;
     
   }finally{
     await client.end();

@@ -2,22 +2,10 @@ import { Client } from "pg";
 
 //registra credenciais para acesso ao banco
 async function query(object) {
-  const client = new Client({
-    host: process.env.POSTGRES_HOST,
-    port: process.env.POSTGRES_PORT,
-    user: process.env.POSTGRES_USER,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    ssl: process.env.NODE_ENV === 'development' ? false : true,
-    //se o ambiente estiver em desenvolvimento, não use o ssl.
-    //se estiver em produção, use o ssl
-    //o ambiente de desenvolvimento não está configurado para usar ssl
-  });  
-  
-  //tenta fazer a query e retornar o resultado
+  let client;  
   try{
     //abre conexão com o banco 
-    await client.connect();
+    client = await getNewClient();
     const result = await client.query(object);
     return result;
 
@@ -33,8 +21,22 @@ async function query(object) {
   
 }
 
+async function getNewClient() {
+  const client = new Client({
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    user: process.env.POSTGRES_USER,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
+    ssl: getSSLValue(),
+  })
+  await client.connect();
+  return client;
+}
+
 export default {
-  query: query,
+  query,
+  getNewClient
 };
 
 function getSSLValue() {
@@ -44,5 +46,5 @@ function getSSLValue() {
     }
   }
 
-  return process.env.NODE_ENV === 'development' ? true : false;
+  return process.env.NODE_ENV === 'production' ? true : false;
 }

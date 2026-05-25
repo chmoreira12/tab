@@ -1,8 +1,8 @@
-import orchestrator from "tests/orchestrator.js"
+import orchestrator from "tests/orchestrator.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-})
+});
 
 test("GET to /api/v1/status should return 200", async () => {
   //testa requisição na página
@@ -24,5 +24,4 @@ test("GET to /api/v1/status should return 200", async () => {
 
   //testa conexões abertas
   expect(responseBody.dependencies.database.opened_connections).toEqual(1);
-
 });

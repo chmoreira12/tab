@@ -1,8 +1,7 @@
 import database from "infra/database.js";
-import { InternalServerError } from "infra/errors.js"
+import { InternalServerError } from "infra/errors.js";
 
 async function status(req, res) {
-  
   try {
     //busca data em formato ISO
     const updatedAt = new Date().toISOString();
@@ -12,7 +11,9 @@ async function status(req, res) {
     const databaseVersionValue = databaseVersionResult.rows[0].server_version;
 
     //busca número máximo de conexões
-    const databaseMaxConnections = await database.query("SHOW max_connections;");
+    const databaseMaxConnections = await database.query(
+      "SHOW max_connections;",
+    );
     const databaseMaxConnectionsValue =
       databaseMaxConnections.rows[0].max_connections;
 
@@ -37,10 +38,9 @@ async function status(req, res) {
         },
       },
     });
-
-  } catch(error) {
+  } catch (error) {
     const publicErrorObject = new InternalServerError({
-      cause: error
+      cause: error,
     });
 
     res.status(500).json(publicErrorObject);

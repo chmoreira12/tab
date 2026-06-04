@@ -13,7 +13,7 @@ async function query(object) {
     //caso dê erro, mostre
     throw err;
   } finally {
-    await client.end();
+    await client?.end();
     //sempre finalize a conexão, dando certo ou errado
   }
 }

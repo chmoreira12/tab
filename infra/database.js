@@ -1,4 +1,5 @@
 import { Client } from "pg";
+import { ServiceError } from "./errors.js";
 
 //registra credenciais para acesso ao banco
 async function query(object) {
@@ -8,10 +9,12 @@ async function query(object) {
     client = await getNewClient();
     const result = await client.query(object);
     return result;
-  } catch (err) {
-    console.error(err);
-    //caso dê erro, mostre
-    throw err;
+  } catch (error) {
+    const serviceErrorObject = new ServiceError({
+      message: "Erro na conexão com Banco ou na Query",
+      cause: error,
+    });
+    throw serviceErrorObject;
   } finally {
     await client?.end();
     //sempre finalize a conexão, dando certo ou errado

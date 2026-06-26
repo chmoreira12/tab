@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import database from "infra/database.js"
+import database from "infra/database.js";
 import migrationRunner from "node-pg-migrate";
 
 const defaultMigrationOptions = {
@@ -43,10 +43,9 @@ async function runPendingMigrations() {
   }
 }
 
-
 const migrator = {
-    listPendingMigrations,
-    runPendingMigrations
-}
+  listPendingMigrations,
+  runPendingMigrations,
+};
 
 export default migrator;

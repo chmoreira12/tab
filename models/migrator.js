@@ -6,7 +6,7 @@ const defaultMigrationOptions = {
   dryRun: true, //apenas simula
   dir: resolve("infra", "migrations"), //caminho tratado
   direction: "up", //executa migrations (aplica mudanças)
-  verbose: true, //detalha logs
+  log: () => {},
   migrationsTable: "pgmigrations", //tabela onde salvar as migrations
 };
 

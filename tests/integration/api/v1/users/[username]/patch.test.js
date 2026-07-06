@@ -180,7 +180,6 @@ describe("PATCH /api/v1/users/[username]", () => {
         password: "newPassword1",
       });
 
-
       const response = await fetch(
         `http://localhost:3000/api/v1/users/${createdUser.username}`,
         {
@@ -193,9 +192,9 @@ describe("PATCH /api/v1/users/[username]", () => {
           }),
         },
       );
-      
+
       console.log(createdUser.username);
-      
+
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();

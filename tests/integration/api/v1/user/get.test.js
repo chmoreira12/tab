@@ -1,6 +1,6 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator";
-import setCookieParse from "set-cookie-parser";
+import setCookieParser from "set-cookie-parser";
 import session from "models/session.js";
 
 beforeAll(async () => {
@@ -59,7 +59,7 @@ describe("GET /api/v1/user", () => {
 
       // set-cookie assertions
 
-      const parsedSetCookie = setCookieParse(response, {
+      const parsedSetCookie = setCookieParser(response, {
         map: true,
       });
       console.log(parsedSetCookie);
@@ -93,6 +93,19 @@ describe("GET /api/v1/user", () => {
         action: "Verifique se o usuário está logado e tente novamente",
         status_code: 401,
       });
+
+      // Set-Cookie assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
+      });
     });
 
     test("with expired session", async () => {
@@ -123,6 +136,19 @@ describe("GET /api/v1/user", () => {
         message: "Usuário não possui sessão ativa",
         action: "Verifique se o usuário está logado e tente novamente",
         status_code: 401,
+      });
+
+      // Set-Cookie assertions
+      const parsedSetCookie = setCookieParser(response, {
+        map: true,
+      });
+
+      expect(parsedSetCookie.session_id).toEqual({
+        name: "session_id",
+        value: "invalid",
+        maxAge: -1,
+        path: "/",
+        httpOnly: true,
       });
     });
   });

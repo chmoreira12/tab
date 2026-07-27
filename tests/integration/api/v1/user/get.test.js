@@ -2,6 +2,7 @@ import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator";
 import setCookieParser from "set-cookie-parser";
 import session from "models/session.js";
+import { ForbiddenError } from "infra/errors";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -10,11 +11,32 @@ beforeAll(async () => {
 });
 
 describe("GET /api/v1/user", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving the endpoint", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/user");
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      console.log(responseBody);
+
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Acesso negado",
+        action: 'Verifique se o seu usuário possui a feature "read:session"',
+        status_code: 403,
+      });
+    });
+  });
+
   describe("Default user", () => {
     test("with valaid session", async () => {
       const createdUser = await orchestrator.createUser({
         username: "UserWithValidSession",
       });
+
+      const activateUser = await orchestrator.activateUser(createdUser);
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
@@ -29,6 +51,8 @@ describe("GET /api/v1/user", () => {
         "no-store, no-cache, max-age=0, must-revalidate",
       );
 
+      console.log(cacheControl);
+
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
@@ -37,10 +61,10 @@ describe("GET /api/v1/user", () => {
         id: createdUser.id,
         username: "UserWithValidSession",
         email: createdUser.email,
-        features: ["read:activation_token"],
+        features: ["create:session", "read:session"],
         password: createdUser.password,
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activateUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);

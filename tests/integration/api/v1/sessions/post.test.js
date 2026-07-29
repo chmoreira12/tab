@@ -141,7 +141,6 @@ describe("POST /api/v1/sessions", () => {
       const parsedSetCookie = setCookieParse(response, {
         map: true,
       });
-      console.log(parsedSetCookie);
 
       expect(parsedSetCookie.session_id).toEqual({
         name: "session_id",

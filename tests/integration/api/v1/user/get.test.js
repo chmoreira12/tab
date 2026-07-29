@@ -19,8 +19,6 @@ describe("GET /api/v1/user", () => {
 
       const responseBody = await response.json();
 
-      console.log(responseBody);
-
       expect(responseBody).toEqual({
         name: "ForbiddenError",
         message: "Acesso negado",
@@ -38,7 +36,7 @@ describe("GET /api/v1/user", () => {
 
       const activateUser = await orchestrator.activateUser(createdUser);
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       const response = await fetch("http://localhost:3000/api/v1/user", {
         headers: {
@@ -51,8 +49,6 @@ describe("GET /api/v1/user", () => {
         "no-store, no-cache, max-age=0, must-revalidate",
       );
 
-      console.log(cacheControl);
-
       expect(response.status).toBe(200);
 
       const responseBody = await response.json();
@@ -61,7 +57,7 @@ describe("GET /api/v1/user", () => {
         id: createdUser.id,
         username: "UserWithValidSession",
         email: createdUser.email,
-        features: ["create:session", "read:session"],
+        features: ["create:session", "read:session", "update:user"],
         password: createdUser.password,
         created_at: createdUser.created_at.toISOString(),
         updated_at: activateUser.updated_at.toISOString(),
@@ -87,7 +83,6 @@ describe("GET /api/v1/user", () => {
       const parsedSetCookie = setCookieParser(response, {
         map: true,
       });
-      console.log(parsedSetCookie);
 
       expect(parsedSetCookie.session_id).toEqual({
         name: "session_id",
@@ -142,7 +137,7 @@ describe("GET /api/v1/user", () => {
         username: "UserWithExpiredSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       jest.useRealTimers();
 

@@ -1,8 +1,7 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import activation from "models/activation.js";
-import user from "models/user.js";
-import { ForbiddenError } from "infra/errors";
+import authorization from "models/authorization";
 
 const router = createRouter();
 
@@ -12,6 +11,7 @@ router.patch(controller.canRequest("read:activation_token"), patchHandler);
 export default router.handler(controller.errorHandler);
 
 async function patchHandler(request, response) {
+  const userTryingToPatch = request.context.user;
   const activationTokenId = request.query.token_id;
 
   const validActivationToken =
@@ -22,5 +22,11 @@ async function patchHandler(request, response) {
   const usedActivationToken =
     await activation.markTokenAsUsed(activationTokenId);
 
-  return response.status(200).json(usedActivationToken);
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToPatch,
+    "read:activation_token",
+    usedActivationToken,
+  );
+
+  return response.status(200).json(secureOutputValues);
 }

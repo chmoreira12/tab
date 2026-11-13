@@ -93,11 +93,13 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("with correct `email` and correct `password`", async () => {
+    test("With correct `email` and correct `password`", async () => {
       const createdUser = await orchestrator.createUser({
         email: "tudo-correto@gmail.com",
         password: "tudocorreto",
       });
+
+      await orchestrator.activateUser(createdUser);
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "POST",
@@ -139,7 +141,6 @@ describe("POST /api/v1/sessions", () => {
       const parsedSetCookie = setCookieParse(response, {
         map: true,
       });
-      console.log(parsedSetCookie);
 
       expect(parsedSetCookie.session_id).toEqual({
         name: "session_id",

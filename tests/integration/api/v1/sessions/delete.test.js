@@ -43,7 +43,7 @@ describe("DELETE /api/v1/sessions", () => {
         username: "UserWithExpiredSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       jest.useRealTimers();
 
@@ -71,7 +71,7 @@ describe("DELETE /api/v1/sessions", () => {
         username: "UserWithValidSession",
       });
 
-      const sessionObject = await orchestrator.createSession(createdUser.id);
+      const sessionObject = await orchestrator.createSession(createdUser);
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "DELETE",
@@ -110,7 +110,6 @@ describe("DELETE /api/v1/sessions", () => {
       const parsedSetCookie = setCookieParse(response, {
         map: true,
       });
-      console.log(parsedSetCookie);
 
       expect(parsedSetCookie.session_id).toEqual({
         name: "session_id",
